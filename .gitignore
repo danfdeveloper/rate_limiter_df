@@ -1,19 +1,5 @@
 .ruff_cache/
 
-# Test generates these automatically
-*guess.csv
-*guess.pickle
-*.gv
-*.pdf
-*.gv.png
-*guess.yaml
-
-# For whatever reason, git is not ignoring these
-#
-*metric_guess.csv
-*metric_guess.pickle
-*metrics_guess.csv
-*metrics_guess.pickle
 *gv
 *pdf
 *gv.png
@@ -81,12 +67,6 @@ db.sqlite3
 instance/
 .webassets-cache
 
-# Scrapy stuff:
-.scrapy
-
-# Sphinx documentation
-docs/_build/
-
 # PyBuilder
 target/
 
@@ -111,14 +91,6 @@ ENV/
 env.bak/
 venv.bak/
 
-# Spyder project settings
-.spyderproject
-.spyproject
-
-# Rope project settings
-.ropeproject
-
-# mkdocs documentation
 /site
 
 # mypy
@@ -150,5 +122,3 @@ tags
 # Persistent undo
 [._]*.un~
 
-# PyCharm
-.idea/
