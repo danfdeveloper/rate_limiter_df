@@ -1,20 +1,31 @@
 # Rate Limiter
 
-A Python decorator-based rate limiter using the token bucket algorithm.
+A Python decorator-based rate limiter using the sliding window algorithm.
 
 Made by Dan Foster
 
 ## Features
 
 - Simple decorator-based API rate limiting
-- Token bucket algorithm for smooth rate limiting (both short bursts and constant usage are supported)
+- Sliding window algorithm for strict rate limiting (exactly N calls allowed per time period)
 - Per-key rate limiting support (e.g., per user ID)
+- Auto-retry with configurable max retries
 - Thread-safe implementation
 - Zero external dependencies (Python standard library only)
 
 ## Installation
 
-pip install -e .
+```bash
+pip install rate-limiter-df
+```
+
+For development:
+
+```bash
+pip install -e ".[dev]"
+```
+
+## Usage
 
 ### Basic Rate Limiting
 
@@ -23,7 +34,6 @@ from rate_limiter_df import RateLimiter, RateLimitExceeded
 
 @RateLimiter(calls=10, period=60)  # 10 calls per 60 seconds
 def my_api_call():
-    # Your function code goes here
     return "Success"
 
 try:
@@ -53,53 +63,49 @@ process_user_request(user_id=1, data="...")
 process_user_request(user_id=2, data="...")
 ```
 
-### Advanced Example
+### Auto-Retry
+
+Automatically wait and retry when rate limited:
 
 ```python
-from rate_limiter_df import RateLimiter, RateLimitExceeded
-import time
+@RateLimiter(calls=2, period=1.0, auto_retry=True, max_retries=3)
+def resilient_call():
+    return "Success"
 
-@RateLimiter(calls=3, period=5.0)
-def expensive_operation():
-    print("Performing expensive operation...")
-    return "Done"
-
-# Make multiple calls
-for i in range(5):
-    try:
-        result = expensive_operation()
-        print(f"Call {i+1}: {result}")
-    except RateLimitExceeded as e:
-        print(f"Call {i+1}: {e}")
-        time.sleep(1)  # Wait before retrying
+# If rate limited, the decorator will sleep and retry up to 3 times
+# before raising RateLimitExceeded
+result = resilient_call()
 ```
 
 ## How It Works
 
-The rate limiter uses the **token bucket algorithm**:
+The rate limiter uses the **sliding window algorithm**:
 
-- Each function (or key) has a bucket that holds tokens
-- Tokens are consumed when the function is called
-- Tokens refill over time at a constant rate
-- If no tokens are available, a `RateLimitExceeded` exception is raised
+- Each function (or key) tracks timestamps of recent calls
+- When a call is made, timestamps older than the window period are discarded
+- If the number of calls within the window is under the limit, the call proceeds
+- If the limit has been reached, a `RateLimitExceeded` exception is raised with a retry time
+- With `auto_retry` enabled, the decorator sleeps for the wait time and retries automatically
 
 ## API Reference
 
-### `RateLimiter(calls, period, per_key=None)`
+### `RateLimiter(calls, period, per_key=None, auto_retry=False, max_retries=3)`
 
 Creates a rate limiter decorator.
 
 **Parameters:**
-- `calls` (int): Maximum number of calls allowed
-- `period` (float): Time period in seconds
+- `calls` (int): Maximum number of calls allowed per period. Default: `1`
+- `period` (float): Time period in seconds. Default: `60.0`
 - `per_key` (callable, optional): Function to extract a key from function arguments for per-key rate limiting
+- `auto_retry` (bool): If `True`, automatically wait and retry when rate limited. Default: `False`
+- `max_retries` (int): Maximum number of retry attempts when `auto_retry` is enabled. Default: `3`
 
 **Returns:**
 - A decorator that can be applied to functions
 
 ### `RateLimitExceeded`
 
-Exception raised when the rate limit is exceeded. The exception message includes information about when to retry.
+Exception raised when the rate limit is exceeded. The exception message includes the wait time before a retry will succeed.
 
 ## License
 
