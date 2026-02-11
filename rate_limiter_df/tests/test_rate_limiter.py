@@ -62,8 +62,8 @@ def test_per_key_rate_limiting():
         test_func(user_id=2)
 
 
-def test_token_refill():
-    """Test that tokens refill over time."""
+def test_window_expiry():
+    """Test that calls are allowed again after the window period expires."""
     call_count = [0]
     
     @RateLimiter(calls=2, period=0.5)
@@ -71,15 +71,15 @@ def test_token_refill():
         call_count[0] += 1
         return call_count[0]
     
-    # Use up all tokens
+    # Use up all call slots
     test_func()
     test_func()
-    
+
     # Should be rate limited
     with pytest.raises(RateLimitExceeded):
         test_func()
-    
-    # Wait for tokens to refill
+
+    # Wait for the window to expire
     time.sleep(0.6)
     
     # Should work again

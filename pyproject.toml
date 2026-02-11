@@ -4,10 +4,10 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "rate-limiter-df"
-version = "0.1.0"
-description = "A decorator-based rate limiter using the token bucket algorithm"
+version = "0.2.1"
+description = "A decorator-based rate limiter using the sliding-window algorithm"
 readme = "README.md"
-requires-python = ">=3.7"
+requires-python = ">=3.10"
 license = {text = "MIT"}
 authors = [
     {name = "Dan Foster"}
@@ -16,19 +16,21 @@ classifiers = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Developers",
     "License :: OSI Approved :: MIT License",
-    "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.7",
-    "Programming Language :: Python :: 3.8",
-    "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
 ]
 
+[project.urls]
+Homepage = "https://github.com/danfdeveloper/rate_limiter_df"
+Repository = "https://github.com/danfdeveloper/rate_limiter_df"
+Issues = "https://github.com/danfdeveloper/rate_limiter_df/issues"
+
 [project.optional-dependencies]
 dev = [
+    "mypy",
+    "ruff",
     "pytest>=7.0.0",
-    "pytest-cov>=4.0.0",
 ]
 
 [tool.setuptools]
@@ -41,14 +43,7 @@ python_classes = ["Test*"]
 python_functions = ["test_*"]
 
 [tool.mypy]
-python_version = "3.11"
+python_version = "3.10"
 strict = true
 exclude = '(build|dist|tests|examples)/'
-
-[project.optional-dependencies]
-dev = [
-    "mypy",
-    "ruff",
-    "pytest",
-]
 

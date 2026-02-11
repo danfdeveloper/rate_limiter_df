@@ -58,6 +58,21 @@ def main():
             print(f"    User 2 rate limited: {e}")
         time.sleep(0.2)
     
+    # Example 3: Auto-retry
+    print("\n3. Auto-Retry (2 calls per 1 second, auto-retry enabled)")
+    print("-" * 60)
+
+    @RateLimiter(calls=2, period=1.0, auto_retry=True, max_retries=3)
+    def resilient_call():
+        return "Auto-retried call successful"
+
+    for i in range(4):
+        try:
+            result = resilient_call()
+            print(f"  Call {i+1}: {result}")
+        except RateLimitExceeded as e:
+            print(f"  Call {i+1}: {e}")
+
     print("\n" + "=" * 60)
     print("Examples completed!")
 
