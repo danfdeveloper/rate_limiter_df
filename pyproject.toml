@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "rate-limiter-df"
-version = "0.2.0"
-description = "A decorator-based rate limiter using the token bucket algorithm"
+version = "0.2.1"
+description = "A decorator-based rate limiter using the sliding-window algorithm"
 readme = "README.md"
 requires-python = ">=3.10"
 license = {text = "MIT"}
